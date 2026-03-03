@@ -5,26 +5,31 @@ deck:
   event: "SCaLE 23x"
   branding:
     organization: "Inspektor Gadget"
-    primary_color: "#111827"   # near-black
-    accent_color: "#2563EB"    # blue
+    primary_color: "#000000"   # true black background
+    accent_color: "#FF2D7E"    # Inspektor Gadget pink
     font: "Calibri"
+    text_color: "#FFFFFF"      # white text
     logo:
-      path: "docs/media/inspektor-gadget-logo.png" # TODO: add file (or remove if not used)
+      path: "docs\media\ig-logo-compact.svg"
       placement: "top-right"
   output:
     filename: "Ask_and_You_Shall_Debug_SCaLE.pptx"
   layout_defaults:
     slide_size: "16:9"
+    background_color: "#000000"   # black background
     title_font_pt: 40
     body_font_pt: 24
     footer_font_pt: 12
+    text_color: "#FFFFFF"         # white text
     footer_text: "Inspektor Gadget MCP Server • https://github.com/inspektor-gadget/ig-mcp-server"
-  build_rules:
+  build_guidelines:
     - "No speaker notes."
+    - "No cheesy AI generated images." 
     - "Prefer 3–5 bullets per slide; avoid dense text."
     - "Use consistent footer on all non-title slides."
     - "When referencing gadgets, use correct names (e.g., trace_dns, tcpdump, top_process, profile_blockio, top_blockio)."
     - "Screenshots are optional. Use placeholders if assets are missing."
+    - "AI/slide generator is encouraged to choose the most effective layout and design for each slide based on the content provided."
 
 repo_sources:
   - name: "SCaLE materials"
@@ -44,107 +49,160 @@ repo_sources:
 
 # Slide 1
 id: title
-layout: title
 title: "Ask and You Shall Debug:"
 subtitle: "Conversational Troubleshooting for Kubernetes"
 meta:
-  right_corner:
-    - "SCaLE"
+  bottom_right_corner:
+    - "SCaLE 23x"
 images:
-  - path: "docs/media/inspektor-gadget-logo.png"
+  - path: "docs\media\ig-logo-compact.svg"
     placement: "top-right"
     fit: "contain"
     optional: true
 
 # Slide 2
-id: why-and-setup
-layout: title_and_bullets
-title: "Why conversational troubleshooting?"
-bullets:
-  - "Incidents are time-sensitive and cognitively expensive"
-  - "Troubleshooting often requires many tools + exact commands"
-  - "Goal: make real-time observability accessible via natural language"
-  - "We'll follow an on-call story and resolve multiple scenarios"
+id: about-me
+title: "About Me"
+bio: |
+  Maya Singh is a Product Manager at Microsoft working on AKS observability, security, and developer experience. She is a maintainer of the Inspektor Gadget project and and has spoken at KubeCon, SCaLE, and other industry events.
+images:
+  - path: "docs\media\ig-logo-compact.svg"
+    placement: "top-right"
+    fit: "contain"
+    optional: true
 
 # Slide 3
+id: why-and-setup
+title: "Why conversational troubleshooting?"
+content:
+  - "Incidents are time-sensitive and cognitively expensive"
+  - "Troubleshooting often requires many tools + exact commands"
+  - "Goal: make real-time observability accessible via natural language to decrease mean time to resolution and get workloads back to green"
+images:
+  - path: "docs\media\ig-logo-compact.svg"
+    placement: "top-right"
+    fit: "contain"
+    optional: true
+
+# Slide 4
 id: agenda
-layout: title_and_bullets
 title: "Agenda"
-bullets:
-  - "Demo 1: DNS latency (trace_dns)"
-  - "Zoom out: Inspektor Gadget + gadgets"
+content:
+  - "Demo 1: It's always DNS!"
+  - "Zoom out: Inspektor Gadget + gadgets + eBPF"
   - "Why MCP server (and how it fits)"
   - "Mini-demos: disk pressure, CPU saturation, networking misconfig"
   - "Wrap-up + resources"
-
-# Slide 4
-id: scenario-1-dns-symptoms
-layout: title_and_bullets
-title: "Scenario 1: Slow requests → DNS latency"
-bullets:
-  - "Symptom: intermittent slowness / timeouts"
-  - "Hypothesis space is large (DNS, network, app, load, etc.)"
-  - "We start by validating whether DNS resolution is slow"
-  - "Tool we'll use: trace_dns"
-callouts:
-  - "Key idea: measure, don't guess."
+images:
+  - path: "docs\media\ig-logo-compact.svg"
+    placement: "top-right"
+    fit: "contain"
+    optional: true
 
 # Slide 5
-id: scenario-1-dns-trace
-layout: title_and_bullets
-title: "Using trace_dns to observe DNS in real time"
-bullets:
-  - "trace_dns traces DNS requests and responses"
-  - "It captures request/response pairs and computes latency"
-  - "Use it to identify slow lookups and affected workloads"
-  - "Outcome: narrow the problem quickly and objectively"
+id: scenario-1-dns-symptoms
+title: "It's Always DNS"
+narrative: "You're on-call. It's Sunday afternoon. A Slack message appears: 'Hey, something seems slow... some requests are timing out but not all of them. Feels intermittent?' You've seen this before. You take a breath. You open your laptop."
+content:
+  - "Symptom: intermittent timeouts — but only for *some* requests"
+  - "Some lookups resolve fine. Others hang for 5+ seconds then fail."
+  - "Is it the app? The network? DNS? A flaky upstream service?"
+  - "Hypothesis space is large — and the clock is ticking"
+callouts:
+  - "Where do you even start?"
 images:
-  - path: "docs/media/placeholder_trace_dns.png"
-    caption: "TODO: screenshot of trace_dns output / table"
+  - path: "docs\media\ig-logo-compact.svg"
+    placement: "top-right"
+    fit: "contain"
     optional: true
 
 # Slide 6
+id: scenario-1-dns-trace
+title: "Let's Ask Copilot"
+narrative: "[LIVE DEMO] Ask: 'I'm seeing intermittent DNS timeouts in my cluster. Can you help me figure out what's going on?' — watch the MCP server pick trace_dns, run it, and surface the answer."
+content:
+  - "The cluster has a pod making two DNS queries in a loop:"
+  - "  ✅  example.com → cluster nameserver → resolves fast"
+  - "  ❌  socallinuxexpo.org → 1.2.3.4 → unreachable, times out every time"
+  - "trace_dns captures every request/response pair with latency"
+  - "The AI reads the output and pinpoints the bad nameserver (1.2.3.4)"
+callouts:
+  - "A 5-second timeout is obvious in the data. The hard part was knowing where to look."
+images:
+  - path: "docs/media/placeholder_trace_dns.png"
+    caption: "TODO: screenshot of trace_dns output showing failed requests for socallinuxexpo.org via 1.2.3.4"
+    optional: true
+  - path: "docs\media\ig-logo-compact.svg"
+    placement: "top-right"
+    fit: "contain"
+    optional: true
+
+# Slide 7
 id: zoom-out-what-is-ig
-layout: title_and_bullets
 title: "What is Inspektor Gadget?"
 bullets:
   - "A systems inspection + data collection framework powered by eBPF"
   - "Provides observability in Kubernetes and Linux contexts"
   - "Ships a wide selection of "gadgets" for debugging and monitoring"
-  - "Designed to make low-level visibility usable in familiar workflows"
+  - "Designed to make low-level visibility easy within familiar workflows"
 images:
   - path: "docs/media/inspektor-gadget-logo.png"
     placement: "top-right"
     fit: "contain"
     optional: true
 
-# Slide 7
+# Slide 8
 id: what-is-a-gadget
-layout: title_and_bullets
 title: "What is a "gadget"?"
 bullets:
-  - "A purpose-built observability tool (trace / snapshot / top / profile)"
+  - "A purpose-built eBPF powered observability tool (trace / snapshot / top / profile)"
   - "Examples we'll use today:"
   - "• trace_dns (DNS requests/responses + latency)"
   - "• profile_blockio + top_blockio (disk pressure / block I/O)"
   - "• top_process (CPU-heavy processes)"
   - "• tcpdump (packet capture with filters in container context)"
+callouts:
+  - "Library of gadgets can be found on artifact hub"
+images:
+  - path: "docs\media\ig-logo-compact.svg"
+    placement: "top-right"
+    fit: "contain"
+    optional: true
 
-# Slide 8
+# Slide 9
+id: what-is-ebpf
+title: "What is eBPF?"
+content:
+  - "eBPF lets you run sandboxed programs inside the Linux kernel — safely, without kernel modules"
+  - "Programs are triggered by events: syscalls, network packets, function calls, and more"
+  - "Zero code changes to the app or the kernel required"
+  - "Used by observability, security, and networking tools across the industry"
+callouts:
+  - "Think of it as a superpower for seeing exactly what's happening inside your system."
+images:
+  - path: "docs\media\ig-logo-compact.svg"
+    placement: "top-right"
+    fit: "contain"
+    optional: true
+
+# Slide 10
 id: why-mcp
-layout: title_and_bullets
 title: "Problem: many gadgets → hard to choose"
 bullets:
   - "Inspektor Gadget has a large library of powerful gadgets"
-  - "In an incident, picking the *right* gadget quickly is the hard part"
+  - "In an incident, we found picking the *right* gadget quickly is the hard part"
   - "Teams end up memorizing commands, or reaching for familiar tools first"
   - "We wanted: "describe the symptom → get the right tool + next step""
 callouts:
   - "This is where we discovered MCP."
+images:
+  - path: "docs\media\ig-logo-compact.svg"
+    placement: "top-right"
+    fit: "contain"
+    optional: true
 
-# Slide 9
+# Slide 11
 id: what-is-mcp
-layout: title_and_bullets
 title: "What is MCP (Model Context Protocol)?"
 bullets:
   - "A standard way for an LLM to call external tools in a structured, safe way"
@@ -153,10 +211,14 @@ bullets:
   - "In our case: the tools are Inspektor Gadget gadgets via ig-mcp-server"
 callouts:
   - "MCP turns "chat" into "chat + actions" (tool calls)."
+images:
+  - path: "docs\media\ig-logo-compact.svg"
+    placement: "top-right"
+    fit: "contain"
+    optional: true
 
-# Slide 10
+# Slide 12
 id: architecture-high-level
-layout: title_and_bullets
 title: "High-level architecture"
 bullets:
   - "Copilot/LLM ↔ MCP protocol ↔ ig-mcp-server ↔ Inspektor Gadget gadgets"
@@ -167,20 +229,27 @@ images:
   - path: "docs/media/placeholder_architecture.png"
     caption: "TODO: diagram (LLM → MCP → IG MCP server → IG gadgets)"
     optional: true
+  - path: "docs\media\ig-logo-compact.svg"
+    placement: "top-right"
+    fit: "contain"
+    optional: true
 
-# Slide 11
+# Slide 13
 id: human-vs-ai
-layout: title_and_bullets
 title: "Human vs. AI troubleshooting"
 bullets:
   - "Humans: hypothesis-driven, sequential, bias-prone under pressure"
   - "LLM + real-time tools: broader search, more consistent method"
   - "Best results come from collaboration (human judgment + machine speed)"
   - "Guardrail: confirm findings with observable evidence"
+images:
+  - path: "docs\media\ig-logo-compact.svg"
+    placement: "top-right"
+    fit: "contain"
+    optional: true
 
-# Slide 12
+# Slide 14
 id: scenario-2-disk-pressure
-layout: title_and_bullets
 title: "Scenario 2: Disk pressure"
 bullets:
   - "Symptom: disk pressure alerts, slow writes, cascading failures"
@@ -188,24 +257,32 @@ bullets:
   - "Gadgets:"
   - "• profile_blockio (profiling block I/O behavior)"
   - "• top_blockio (top block I/O contributors)"
+  - "• top_file (top file reads/writes)"
 images:
   - path: "docs/media/placeholder_blockio.png"
     caption: "TODO: screenshot of profile_blockio/top_blockio output"
     optional: true
+  - path: "docs\media\ig-logo-compact.svg"
+    placement: "top-right"
+    fit: "contain"
+    optional: true
 
-# Slide 13
+# Slide 15
 id: scenario-3-cpu
-layout: title_and_bullets
-title: "Scenario 3: CPU saturation"
+title: "Scenario 3: CPU Utilization"
 bullets:
   - "Symptom: high latency + throttling + noisy neighbor suspicion"
   - "Goal: identify CPU-heavy processes in the relevant workload context"
   - "Gadget: top_process"
   - "Optional deeper profiling exists: profile_cpu"
+images:
+  - path: "docs\media\ig-logo-compact.svg"
+    placement: "top-right"
+    fit: "contain"
+    optional: true
 
-# Slide 14
+# Slide 16
 id: scenario-4-networking
-layout: title_and_bullets
 title: "Scenario 4: Networking config/port mismatch"
 bullets:
   - "Symptom: app can't connect / sporadic failures"
@@ -216,20 +293,27 @@ images:
   - path: "docs/media/placeholder_tcpdump.png"
     caption: "TODO: screenshot of tcpdump gadget output"
     optional: true
+  - path: "docs\media\ig-logo-compact.svg"
+    placement: "top-right"
+    fit: "contain"
+    optional: true
 
-# Slide 15
+# Slide 17
 id: operations-safety
-layout: title_and_bullets
 title: "Operations & safety"
 bullets:
   - "Run MCP server in read-only mode when appropriate"
   - "Use restricted permissions via dedicated service account"
   - "Reduce scope to avoid overload (namespace, limits, timeouts)"
   - "Treat AI recommendations as hypotheses until validated"
+images:
+  - path: "docs\media\ig-logo-compact.svg"
+    placement: "top-right"
+    fit: "contain"
+    optional: true
 
-# Slide 16
+# Slide 18
 id: wrap-up
-layout: title_and_bullets
 title: "Wrap-up"
 bullets:
   - "Inspektor Gadget: real-time observability powered by eBPF"
@@ -239,3 +323,8 @@ bullets:
   - "• IG MCP Server: https://github.com/inspektor-gadget/ig-mcp-server"
   - "• Inspektor Gadget: https://github.com/inspektor-gadget/inspektor-gadget"
   - "• Website: https://www.inspektor-gadget.io/"
+images:
+  - path: "docs\media\ig-logo-compact.svg"
+    placement: "top-right"
+    fit: "contain"
+    optional: true
