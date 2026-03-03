@@ -235,6 +235,23 @@ images:
     optional: true
 
 # Slide 13
+id: agent-skills
+title: "Agent Skills: The AI's Playbook"
+content:
+  - "Agent skills are structured instruction sets that guide the AI during troubleshooting"
+  - "Each skill defines: what symptoms to look for, which gadgets to run, and how to interpret results"
+  - "Think of them as runbooks — but the AI reads and executes them in real time"
+  - "Skills make AI-assisted troubleshooting repeatable, auditable, and domain-aware"
+  - "Teams can author custom skills for their own infrastructure and failure patterns"
+callouts:
+  - "The AI isn't guessing — it's following your team's best practices, at machine speed."
+images:
+  - path: "docs\media\ig-logo-compact.svg"
+    placement: "top-right"
+    fit: "contain"
+    optional: true
+
+# Slide 14
 id: human-vs-ai
 title: "Human vs. AI troubleshooting"
 bullets:
@@ -248,7 +265,7 @@ images:
     fit: "contain"
     optional: true
 
-# Slide 14
+# Slide 15
 id: scenario-2-disk-pressure
 title: "Scenario 2: Disk pressure"
 bullets:
@@ -267,7 +284,7 @@ images:
     fit: "contain"
     optional: true
 
-# Slide 15
+# Slide 16
 id: scenario-3-cpu
 title: "Scenario 3: CPU Utilization"
 bullets:
@@ -281,7 +298,7 @@ images:
     fit: "contain"
     optional: true
 
-# Slide 16
+# Slide 17
 id: scenario-4-networking
 title: "Scenario 4: Networking config/port mismatch"
 bullets:
@@ -298,7 +315,24 @@ images:
     fit: "contain"
     optional: true
 
-# Slide 17
+# Slide 18
+id: holmesgpt
+title: "The Ecosystem is Growing: HolmesGPT"
+content:
+  - "HolmesGPT is an open source AI-powered on-call assistant for Kubernetes"
+  - "Integrates natively with Inspektor Gadget's toolset as a data source"
+  - "Investigates alerts automatically: reads metrics, logs, and IG gadget output"
+  - "Gives plain-language root cause analysis — not just raw data"
+  - "Complements the MCP server approach: same IG primitives, different interface"
+callouts:
+  - "IG gadgets are becoming a building block for the next generation of AI ops tooling."
+images:
+  - path: "docs\media\ig-logo-compact.svg"
+    placement: "top-right"
+    fit: "contain"
+    optional: true
+
+# Slide 19
 id: operations-safety
 title: "Operations & safety"
 bullets:
@@ -312,7 +346,7 @@ images:
     fit: "contain"
     optional: true
 
-# Slide 18
+# Slide 20
 id: wrap-up
 title: "Wrap-up"
 bullets:
